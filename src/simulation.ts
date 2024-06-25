@@ -1,3 +1,6 @@
+import erf from '@stdlib/math-base-special-erf';
+import erfinv from '@stdlib/math-base-special-erfinv';
+
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Model Inputs
@@ -171,16 +174,14 @@ for (let i = 1; i < tEND; i++) {
       // Below Thermocline
       Tth[i][j] =
         TaveS[i] +
-        (Tc - TaveS[i]) *
-          Math.erf((x[j] - C[i]) / Math.sqrt(4 * alfa * time[i]));
+        (Tc - TaveS[i]) * erf((x[j] - C[i]) / Math.sqrt(4 * alfa * time[i]));
     } else {
       // Above Thermocline
       Tth[i][j] =
         Tc +
         TI[i] -
         (TaveS[i] +
-          (Tc - TaveS[i]) *
-            Math.erf((C[i] - x[j]) / Math.sqrt(4 * alfa * time[i])));
+          (Tc - TaveS[i]) * erf((C[i] - x[j]) / Math.sqrt(4 * alfa * time[i])));
     }
   }
 
@@ -188,12 +189,12 @@ for (let i = 1; i < tEND; i++) {
   const Wth =
     2 *
     Math.sqrt(4 * alfa * time[i]) *
-    Math.erfinv(1 + 0.001 * (Tc / (Tc - TaveS[i])));
+    erfinv(1 + 0.001 * (Tc / (Tc - TaveS[i])));
 
   // Determine Time for profile with temperatures of next time step to obtain the same thermocline thickness
   const tnew =
     (1 / (4 * alfa)) *
-    (Wth / (2 * Math.erfinv(1 + 0.001 * (Tc / (Tc - TaveS[i + 1]))))) ** 2;
+    (Wth / (2 * erfinv(1 + 0.001 * (Tc / (Tc - TaveS[i + 1]))))) ** 2;
 
   // Calculate next 'fictitious' simulation time value
   time[i + 1] = tnew + delt;
