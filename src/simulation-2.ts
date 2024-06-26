@@ -1,5 +1,18 @@
 import * as fs from 'fs';
 
+// The core source of this code is from the paper at
+// https://macsphere.mcmaster.ca/bitstream/11375/21274/2/Unrau_Cody_M_2017March_MASc.pdf
+// Appendix D Section D.2 which starts at page 166.
+//
+// The paper is titled Numerical Investigation of One-Dimensional Storage Tank
+// Models and the Development of Analytical Modelling Techniques By Cody Unrau,
+// B.Sc.
+//
+// I know that the paper says that the code in Section D.5 is more accurate than
+// the one we used, but that code is for a different shape tank. (Section D.5 is
+// for a tank with an inlet jet spews water vertically into the tank. The tank
+// we want to model has an inlet jet that spews water horizontally into it.)
+
 // ----------------------------------------------------------------------
 // Model Inputs
 // ----------------------------------------------------------------------
