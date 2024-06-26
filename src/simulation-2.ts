@@ -3,19 +3,32 @@ import * as fs from 'fs';
 // ----------------------------------------------------------------------
 // Model Inputs
 // ----------------------------------------------------------------------
-const Tinitial = 20; // Initial Tank Fluid Temperature (degC)
-const H = 1; // Tank Height (m)
-const visc = 0.00070057; // Average Fluid Viscosity (m2/s)
-const rhoH = 987.68; // Hot Water Density (kg/m3)
-const rhoC = 997.78; // Cold Water Density (kg/m3)
-const rho = 0.5 * (rhoH + rhoC); // Average Fluid Density (kg/m3)
-const k = 0.62614; // Thermal Conductivity (W/mK)
-const cp = 4068.5; // Specific Heat Capacity (J/kgK)
-const beta = 0.00032452; // Thermal Expansion Coeff (1/K)
-const alfa = k / (rho * cp); // Diffusivity (m2/s)
-const g = 9.81; // Gravitational Acceleration (m/s2)
-const u = 0.0001; // Mean Tank Fluid Velocity (m/s)
-const N = 100; // Number of Tank Nodes
+/** Initial Tank Fluid Temperature (degC) */
+const Tinitial = 20;
+/** Tank Height (m) */
+const H = 1;
+/** Average Fluid Viscosity (m2/s) */
+const visc = 0.00070057;
+/** Hot Water Density (kg/m3) */
+const rhoH = 987.68;
+/** Cold Water Density (kg/m3) */
+const rhoC = 997.78;
+/** Average Fluid Density (kg/m3) */
+const rho = 0.5 * (rhoH + rhoC);
+/** Thermal Conductivity (W/mK) */
+const k = 0.62614;
+/** Specific Heat Capacity (J/kgK) */
+const cp = 4068.5;
+/** Thermal Expansion Coeff (1/K) */
+const beta = 0.00032452;
+/** Diffusivity (m2/s) */
+const alfa = k / (rho * cp);
+/** Gravitational Acceleration (m/s2) */
+const g = 9.81;
+/** Mean Tank Fluid Velocity (m/s) */
+const u = 0.0001;
+/** Number of Tank Nodes */
+const N = 100;
 
 // ----------------------------------------------------------------------
 // Read Input Temperature Data from Text File
@@ -25,12 +38,18 @@ const inputData = fs
   .trim()
   .split('\n')
   .map((line) => line.split(' ').map(Number));
-const TIMEin = inputData.map((row) => row[0]); // Read Time Step Values (s)
-const Tin = inputData.map((row) => row[1]); // Read Inlet Temperature Values (degC)
-const Length = TIMEin.length; // Set Number of Time Steps
-const TinInitial = Tin[0]; // Read Initial Inlet Temp. (degC)
-const ThermTime = [0]; // First Thermocline begins at t=0
-const ThermTemp = [TinInitial]; // First Thermocline Hot Temperature (Initial Inlet Temp, degC)
+/** Read Time Step Values (s) */
+const TIMEin = inputData.map((row) => row[0]);
+/** Read Inlet Temperature Values (degC) */
+const Tin = inputData.map((row) => row[1]);
+/** Set Number of Time Steps */
+const Length = TIMEin.length;
+/** Read Initial Inlet Temp. (degC) */
+const TinInitial = Tin[0];
+/** First Thermocline begins at t=0 */
+const ThermTime = [0];
+/** First Thermocline Hot Temperature (Initial Inlet Temp, degC) */
+const ThermTemp = [TinInitial];
 
 // Determine times at which new thermocline is created (when temperature increases by 0.1 degC and the new hot temperature value for thermocline)
 let A = 0;
@@ -67,13 +86,18 @@ for (let i = 0; i < ThermTime.length; i++) {
 }
 
 // Simulation Parameters
-const tEND = Length; // Final Time Step number
-const delt = TIMEin[1] - TIMEin[0]; // Time Step Size (s)
-const t = TIMEin; // Simulation times at each time step (s)
-const x = Array.from({ length: N }, (_, i) => H / (2 * N) + i * (H / N)); // Node Locations (m)
+/** Final Time Step number */
+const tEND = Length;
+/** Time Step Size (s) */
+const delt = TIMEin[1] - TIMEin[0];
+/** Simulation times at each time step (s) */
+const t = TIMEin;
+/** Node Locations (m) */
+const x = Array.from({ length: N }, (_, i) => H / (2 * N) + i * (H / N));
 
 // Thermocline Thickness Variables
-const C = Array.from({ length: tEND }, (_, i) => t[i] * u); // Initial Thermocline Location (m)
+/** Initial Thermocline Location (m) */
+const C = Array.from({ length: tEND }, (_, i) => t[i] * u);
 const T: number[][] = Array(tEND)
   .fill(0)
   .map(() => Array(N * ThermTime.length).fill(0));
