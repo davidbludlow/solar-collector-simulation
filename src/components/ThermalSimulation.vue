@@ -12,8 +12,10 @@
     Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
   </button>
   <br />
-  Solar Collector input temperature {{ round(collectorInputTemperature) }}°C <br />
-  Solar Collector output temperature {{ round(collectorOutputTemperature) }}°C <br />
+  Solar Collector input water temperature
+  {{ round(collectorInputTemperature) }}°C <br />
+  Solar Collector output water temperature
+  {{ round(collectorOutputTemperature) }}°C <br />
   <br />
   Temperatures of water in different sections of the solar collector (water node
   temperatures): <br />
