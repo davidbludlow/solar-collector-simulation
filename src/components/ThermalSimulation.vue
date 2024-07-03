@@ -79,12 +79,21 @@ const volumeOfWaterNode = 0.001; // 1 liter
 /** In seconds. The time it takes for the pump to move one water node, when on. */
 const pumpTimeToMoveOneNode = volumeOfWaterNode / pumpFlowRateWhenOn;
 /** Number of water nodes that fit inside the solar collector. */
-const collectorWaterNodeCount =
-  // This will hardly need to be rounded at all, because of the constant values
-  // we chose.
-  Math.round(volumeOfWaterInCollector / volumeOfWaterNode);
+const collectorWaterNodeCount = Math.round(
+  volumeOfWaterInCollector / volumeOfWaterNode,
+);
+assertVolumeIsAMultipleOfNodeVolume(
+  volumeOfWaterInCollector,
+  collectorWaterNodeCount,
+  'solar collector',
+);
 /** Number of water nodes that fit inside the full thermal storage tank. */
 const tankWaterNodeCount = Math.round(tankVolume / volumeOfWaterNode);
+assertVolumeIsAMultipleOfNodeVolume(
+  tankVolume,
+  tankWaterNodeCount,
+  'thermal storage tank',
+);
 /** Number of water nodes that fit inside each of the pipes. */
 const pipeWaterNodeCount = 2;
 /** In meters. The height of the thermal storage tank. */
@@ -247,6 +256,18 @@ function efficiencyOfSolarCollector() {
   // https://solar365.com/solar/thermal/how-efficient-is-a-solar-collector for a
   // "Flat Plate" solar collector.
   return -0.00943 * differenceFromRoomTemp + 0.66;
+}
+
+function assertVolumeIsAMultipleOfNodeVolume(
+  volume: number,
+  nodeCount: number,
+  componentName: string,
+) {
+  if (Math.abs(volume - nodeCount * volumeOfWaterNode) > 0.000001) {
+    throw new Error(
+      `The volume of water in the ${componentName} should be a multiple of \`volumeOfWaterNode\` to keep this code challenge simple.`,
+    );
+  }
 }
 
 /** Round to 2 decimal places */
