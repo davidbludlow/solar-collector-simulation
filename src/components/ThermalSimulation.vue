@@ -1,24 +1,19 @@
 <template>
-  t={{ round(state.t) }}s. or in other words
-  {{ Math.floor(state.t / 60 / 60) }} hours
-  {{ Math.floor((state.t / 60) % 60) }} min {{ Math.floor(state.t % 60) }} s
-  <br />
   <template v-if="state.simulationRunning">
-    <button @click="state.simulationRunning = false">Pause Simulation</button>
-    <br />
-    Simulation running at x{{ simulationTimeDilation }} speed. <br />
+    Simulation running at x{{ simulationTimeDilation }} speed.
   </template>
-  <template v-else>
-    <button @click="state.simulationRunning = true">Resume Simulation</button>
-    <br />
-    <br />
-  </template>
+  t={{ Math.round(state.t) }} seconds ({{ Math.floor(state.t / 60 / 60) }} hours
+  {{ Math.floor((state.t / 60) % 60) }} min {{ Math.round(state.t % 60) }} s)
+  <br />
+  <button @click="state.simulationRunning = !state.simulationRunning">
+    {{ state.simulationRunning ? 'Pause Simulation' : 'Resume Simulation' }}
+  </button>
   <button @click="state.pumpOn = !state.pumpOn">
     Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
   </button>
   <br />
-  Solar Collector input temp {{ round(collectorInputTemp) }}°C <br />
-  Solar Collector output temp {{ round(collectorOutputTemp) }}°C <br />
+  Solar Collector input temperature {{ round(collectorInputTemp) }}°C <br />
+  Solar Collector output temperature {{ round(collectorOutputTemp) }}°C <br />
   <br />
   Temperatures of water in different sections of the solar collector (water node
   temperatures): <br />
@@ -276,4 +271,8 @@ function round(num: number) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+button:not(:last-of-type) {
+  margin-right: 1rem;
+}
+</style>
