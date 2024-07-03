@@ -12,8 +12,8 @@
     Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
   </button>
   <br />
-  Solar Collector input temperature {{ round(collectorInputTemp) }}°C <br />
-  Solar Collector output temperature {{ round(collectorOutputTemp) }}°C <br />
+  Solar Collector input temperature {{ round(collectorInputTemperature) }}°C <br />
+  Solar Collector output temperature {{ round(collectorOutputTemperature) }}°C <br />
   <br />
   Temperatures of water in different sections of the solar collector (water node
   temperatures): <br />
@@ -133,10 +133,10 @@ const state = reactive({
     initialWaterTemperature,
   ),
 });
-const collectorInputTemp = computed(
+const collectorInputTemperature = computed(
   () => last(state.lowerPipeWaterNodeTemperatures) as number,
 );
-const collectorOutputTemp = computed(
+const collectorOutputTemperature = computed(
   () => last(state.collectorWaterNodeTemperatures) as number,
 );
 
@@ -148,8 +148,8 @@ setInterval(
       const deltaTime = pumpTimeToMoveOneNode;
       state.t += deltaTime;
       if (state.pumpOn) pumpOneWaterNode();
-      heatWaterInSolarCollector({ deltaTime });
-      manageTemperatureMixingInTank({ deltaTime });
+      heatWaterInSolarCollector(deltaTime);
+      manageTemperatureMixingInTank(deltaTime);
       // Todo: Manage heat loss from the tank into the environment.
       // Todo: Manage heat loss from the pipes into the environment.
     }
@@ -182,7 +182,7 @@ const densityOfWater = 1000; // Todo: replace constant with a more accurate func
 const collectorTotalWaterMass = volumeOfWaterInCollector * densityOfWater;
 
 /** Heat the water in the solar collector. */
-function heatWaterInSolarCollector({ deltaTime }: { deltaTime: number }) {
+function heatWaterInSolarCollector(deltaTime: number) {
   /** In joules */
   const energyFromSun =
     // Todo: take into account the angle of the sun's rays. This assumes they
@@ -190,7 +190,12 @@ function heatWaterInSolarCollector({ deltaTime }: { deltaTime: number }) {
     state.solarIntensity * collectorSurfaceArea * deltaTime;
 
   /** In joules. Energy transferred to all the water. */
-  const heatAddedToWater = energyFromSun * efficiencyOfSolarCollector();
+  const heatAddedToWater =
+    energyFromSun *
+    efficiencyOfSolarCollector(
+      collectorOutputTemperature.value,
+      ambientAirTemperature,
+    );
   /** In °C. Temperature increase of each node of water. */
   const temperatureIncrease =
     heatAddedToWater / (collectorTotalWaterMass * specificHeatCapacityOfWater);
@@ -210,7 +215,7 @@ const heightOfWaterNodeInTank = tankHeight / tankWaterNodeCount;
 
 // Todo: Use the Crank-Nicolson Algorithm to make this stable and reliable even
 // when the time step is large.
-function manageTemperatureMixingInTank({ deltaTime }: { deltaTime: number }) {
+function manageTemperatureMixingInTank(deltaTime: number) {
   /** In joules. The heat conducted out the top or bottom of each water node. */
   let conductedHeat: number[] =
     // Start with 0 because we will estimate the boundary condition of no heat
@@ -243,9 +248,12 @@ function manageTemperatureMixingInTank({ deltaTime }: { deltaTime: number }) {
  *
  * 1 as a return value would mean 100% efficient. The efficiency could become
  * negative, if the conditions became unfavorable enough. */
-function efficiencyOfSolarCollector() {
+function efficiencyOfSolarCollector(
+  solarCollectorOutputTemperature: number,
+  ambientAirTemperature: number,
+) {
   const differenceFromRoomTemp =
-    collectorOutputTemp.value - ambientAirTemperature;
+    solarCollectorOutputTemperature - ambientAirTemperature;
   // This formula was obtained from finding a best fit line to the data in the
   // graph on
   // https://solar365.com/solar/thermal/how-efficient-is-a-solar-collector for a
