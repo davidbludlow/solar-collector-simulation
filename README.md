@@ -1,6 +1,7 @@
 # solar-collector-simulation
 
-This template should help get you started developing with Vue 3 in Vite.
+This was a small coding challenge I did for a job application. Please pay it no
+mind, unless you are the the ones considering hiring me for that particular job.
 
 ## Recommended IDE Setup
 
