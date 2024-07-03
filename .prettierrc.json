@@ -16,6 +16,23 @@
         "singleQuote": false,
         "trailingComma": "all"
       }
+    },
+    {
+      "files": ["*.json"],
+      "options": {
+        "parser": "json5",
+        "quoteProps": "preserve",
+        "singleQuote": false,
+        "trailingComma": "all"
+      }
+    },
+    {
+      "files": [
+        "./all-on-one-page-simulation.html"
+      ],
+      "options": {
+        "printWidth": 90
+      }
     }
   ]
 }
