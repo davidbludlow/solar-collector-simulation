@@ -18,7 +18,7 @@ const props = withDefaults(
 
 /** Calculates a color to show temperature. */
 function temperatureToColor(temperature: number): string {
-  const blue = [0, 0, 255];
+  const blue = [0, 130, 255];
   const red = [255, 0, 0];
   const fractionOfTempTowardsRed = Math.max(
     0,
