@@ -65,8 +65,8 @@ const pipeWaterNodeCount = 2;
 /** In meters. The height of the thermal storage tank. */
 const tankHeight = Math.cbrt(tankVolume) * 3;
 
-/** The speed of the simulation. 400 is 400 times faster than real time. */
-const simulationTimeDilation = 400;
+/** The speed of the simulation. 300 is 300 times faster than real time. */
+const simulationTimeDilation = 300;
 /** In °C. For all the air that surrounds the system. */
 const ambientAirTemperature = 20; // Room temperature
 /** In °C. For all the water in the system at t=0. Let's start the temperature
