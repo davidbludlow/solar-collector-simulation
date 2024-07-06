@@ -38,7 +38,7 @@ const volumeOfWaterInCollector = 0.007;
  * This value was chosen because
  * https://www.solar365.com/solar/thermal/calculating-flow-rate-and-head-solar-thermal-systems?page=0,0
  * says 0.88 gallons per minute is good. */
-const pumpFlowRateWhenOn = 0.0000555;
+const pumpFlowRateWhenOn = 0.0000555; // WARNING: Decreasing this may destablize the simulation, because it will increase the time step (see comment on `manageHeatConductionAcrossTankWater()`).
 /** In meters. The height of the thermal storage tank. */
 const tankHeight = Math.cbrt(tankVolume) * 2; // Just an estimate
 
