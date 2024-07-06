@@ -13,6 +13,8 @@ import { computed, reactive, onUnmounted } from 'vue';
 import { last } from 'lodash-es';
 import TemperatureGradient from './TemperatureGradient.vue';
 
+const litersToMetersCubed = 0.001;
+
 // System Components Specs
 //
 // These specs are the recommended for a 4-person household in the mountain and
@@ -20,7 +22,7 @@ import TemperatureGradient from './TemperatureGradient.vue';
 // https://www.solar365.com/solar/thermal/how-size-solar-thermal-storage-tank-and-collector-array
 
 /** In meters^3. The volume of the thermal storage tank. */
-const tankVolume = 300 / 1000; // Converted liters to m^3
+const tankVolume = 300 * litersToMetersCubed;
 /** In meters^2. The surface area of the solar collector. */
 const collectorSurfaceArea = 5;
 /** In meters^3. The volume of water in the solar collectors. This assumes that
@@ -41,7 +43,7 @@ const pumpFlowRateWhenOn = 0.0000555;
 /** In meters^3. The volume of a discrete segment of water in the system. Even
  * though the water in this system is mostly continuous, we break it up into
  * segments for simulation purposes. */
-const volumeOfWaterNode = 0.001; // 1 liter
+const volumeOfWaterNode = 1 * litersToMetersCubed;
 /** In seconds. The time it takes for the pump to move one water node, when on. */
 const pumpTimeToMoveOneNode = volumeOfWaterNode / pumpFlowRateWhenOn;
 /** Number of water nodes that fit inside the solar collector. */
