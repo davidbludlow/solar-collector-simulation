@@ -1,60 +1,3 @@
-<template>
-  <button @click="state.simulationRunning = !state.simulationRunning">
-    {{ state.simulationRunning ? 'Pause Simulation' : 'Resume Simulation' }}
-  </button>
-  <button @click="state.pumpOn = !state.pumpOn">
-    Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
-  </button>
-  <p>
-    <template v-if="state.simulationRunning">
-      Simulation running at x{{ simulationTimeDilation }} speed.
-    </template>
-    t={{ Math.round(state.t) }} seconds ({{
-      Math.floor(state.t / 60 / 60)
-    }}
-    hours {{ Math.floor((state.t / 60) % 60) }} min
-    {{ Math.round(state.t % 60) }} s) <br />
-    Solar Collector input water temperature
-    {{ round(collectorInputTemperature) }}°C <br />
-    Solar Collector output water temperature
-    {{ round(collectorOutputTemperature) }}°C
-  </p>
-  <table>
-    <tr>
-      <th>Solar Collector</th>
-      <th>Thermal Storage Tank</th>
-    </tr>
-    <tr></tr>
-    <tr>
-      <td>
-        <TemperatureGradient
-          :temperatures="reversedCollectorWaterNodeTemperatures"
-        ></TemperatureGradient>
-      </td>
-      <td>
-        <TemperatureGradient
-          :temperatures="state.tankWaterNodeTemperatures"
-        ></TemperatureGradient>
-      </td>
-    </tr>
-  </table>
-  <p>The same information as the above table, but in text form:</p>
-  <p class="indent-1">
-    Temperatures of water in different sections of the solar collector (water
-    node temperatures): <br />
-    <template v-for="temperature in reversedCollectorWaterNodeTemperatures">
-      {{ round(temperature) }}°C <br />
-    </template>
-  </p>
-  <p class="indent-1">
-    Temperatures of the layers of water in the thermal storage tank, top to
-    bottom (water node temperatures): <br />
-    <template v-for="temperature in state.tankWaterNodeTemperatures">
-      {{ round(temperature) }}°C <br />
-    </template>
-  </p>
-</template>
-
 <script setup lang="ts">
 // This is the simulation of a system with a solar collector and a thermal
 // storage tank. Water is heated by the sun in the solar collector then pumped
@@ -369,9 +312,66 @@ function round(num: number) {
 }
 </script>
 
+<template>
+  <button @click="state.simulationRunning = !state.simulationRunning">
+    {{ state.simulationRunning ? 'Pause Simulation' : 'Resume Simulation' }}
+  </button>
+  <button @click="state.pumpOn = !state.pumpOn">
+    Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
+  </button>
+  <p>
+    <template v-if="state.simulationRunning">
+      Simulation running at x{{ simulationTimeDilation }} speed.
+    </template>
+    t={{ Math.round(state.t) }} seconds ({{
+      Math.floor(state.t / 60 / 60)
+    }}
+    hours {{ Math.floor((state.t / 60) % 60) }} min
+    {{ Math.round(state.t % 60) }} s) <br />
+    Solar Collector input water temperature
+    {{ round(collectorInputTemperature) }}°C <br />
+    Solar Collector output water temperature
+    {{ round(collectorOutputTemperature) }}°C
+  </p>
+  <table>
+    <tr>
+      <th>Solar Collector</th>
+      <th>Thermal Storage Tank</th>
+    </tr>
+    <tr></tr>
+    <tr>
+      <td>
+        <TemperatureGradient
+          :temperatures="reversedCollectorWaterNodeTemperatures"
+        ></TemperatureGradient>
+      </td>
+      <td>
+        <TemperatureGradient
+          :temperatures="state.tankWaterNodeTemperatures"
+        ></TemperatureGradient>
+      </td>
+    </tr>
+  </table>
+  <p>The same information as the above table, but in text form:</p>
+  <p class="indent-1">
+    Temperatures of water in different sections of the solar collector (water
+    node temperatures): <br />
+    <template v-for="temperature in reversedCollectorWaterNodeTemperatures">
+      {{ round(temperature) }}°C <br />
+    </template>
+  </p>
+  <p class="indent-1">
+    Temperatures of the layers of water in the thermal storage tank, top to
+    bottom (water node temperatures): <br />
+    <template v-for="temperature in state.tankWaterNodeTemperatures">
+      {{ round(temperature) }}°C <br />
+    </template>
+  </p>
+</template>
+
 <style scoped>
 button:not(:last-of-type) {
-  margin-right: .5rem;
+  margin-right: 0.5rem;
 }
 td:deep(.thermal-gradient) {
   height: 12rem;
