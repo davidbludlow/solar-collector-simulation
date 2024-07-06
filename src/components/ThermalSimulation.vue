@@ -12,6 +12,26 @@
     Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
   </button>
   <br />
+  <table>
+    <tr>
+      <th>Solar Collector</th>
+      <th>Thermal Storage Tank</th>
+    </tr>
+    <tr></tr>
+    <tr>
+      <td>
+        <TemperatureGradient
+          :temperatures="reversedCollectorWaterNodeTemperatures"
+        ></TemperatureGradient>
+      </td>
+      <td>
+        <TemperatureGradient
+          :temperatures="state.tankWaterNodeTemperatures"
+        ></TemperatureGradient>
+      </td>
+    </tr>
+  </table>
+  <br />
   Solar Collector input water temperature
   {{ round(collectorInputTemperature) }}°C <br />
   Solar Collector output water temperature
@@ -19,7 +39,7 @@
   <br />
   Temperatures of water in different sections of the solar collector (water node
   temperatures): <br />
-  <div v-for="temperature in state.collectorWaterNodeTemperatures">
+  <div v-for="temperature in reversedCollectorWaterNodeTemperatures">
     {{ round(temperature) }}°C
   </div>
   <br />
@@ -41,8 +61,9 @@
 // We will model the water as a bunch of nodes, each node representing a small
 // segment of the water.
 
-import { computed, reactive } from 'vue';
+import { computed, reactive, onUnmounted } from 'vue';
 import { last } from 'lodash-es';
+import TemperatureGradient from './TemperatureGradient.vue';
 
 // System Components Specs
 //
@@ -141,6 +162,11 @@ const collectorInputTemperature = computed(
 const collectorOutputTemperature = computed(
   () => last(state.collectorWaterNodeTemperatures) as number,
 );
+/** The temperatures of the water nodes in the solar collector, reversed so that
+ * the first node is at the output end of the collector. */
+const reversedCollectorWaterNodeTemperatures = computed(() =>
+  state.collectorWaterNodeTemperatures.slice().reverse(),
+);
 
 // Simulation control loop
 const controlLoopSetInterval = setInterval(
@@ -149,9 +175,12 @@ const controlLoopSetInterval = setInterval(
       /** Seconds of time step */
       const deltaTime = pumpTimeToMoveOneNode;
       state.t += deltaTime;
-      if (state.pumpOn) pumpOneWaterNode();
+      if (state.pumpOn) {
+        pumpOneWaterNode();
+        mixColdWaterOnTopOfTankWithHotWaterBelow();
+      }
       heatWaterInSolarCollector(deltaTime);
-      manageTemperatureMixingInTank(deltaTime);
+      manageHeatConductionAcrossTankWater(deltaTime);
       // Todo: Manage heat loss from the tank into the environment.
       // Todo: Manage heat loss from the pipes into the environment.
     }
@@ -177,6 +206,57 @@ function pumpOneWaterNode() {
   state.lowerPipeWaterNodeTemperatures.unshift(
     state.tankWaterNodeTemperatures.pop() as number,
   );
+}
+
+/** This should be run each time a node is pumped into the top of the tank.
+ *
+ * This mixes the top water node of the thermal storage tank with the nodes
+ * below it if the top node is cooler than the nodes below it. This is because
+ * the cold water would quickly sink below the warm water and mix with it as it
+ * sinks.
+ *
+ * This is according to the algorithm specified at
+ * https://bigladdersoftware.com/epx/docs/24-1/engineering-reference/water-thermal-tanks-includes-water-heaters.html#inversion-mixing
+ * except that we didn't bother to do a weighted average like that algorithm
+ * said, even though a weighted average would probably be better. */
+function mixColdWaterOnTopOfTankWithHotWaterBelow() {
+  const nodes = state.tankWaterNodeTemperatures;
+  if (nodes[0] >= nodes[1]) {
+    // This shortcut will happen most of the time that the pump is on.
+    return;
+  }
+  /** Number of nodes that we are sure we need to mix (average out the
+   * temperatures for them), starting at the top of the tank. */
+  let countOfNodesToMix = 2;
+  let averageTemperatureOfNodesToMix = averageOfFirstNNumbers(
+    nodes,
+    countOfNodesToMix,
+  );
+  while (
+    countOfNodesToMix < nodes.length &&
+    averageTemperatureOfNodesToMix < nodes[countOfNodesToMix]
+  ) {
+    countOfNodesToMix++;
+    averageTemperatureOfNodesToMix = averageOfFirstNNumbers(
+      nodes,
+      countOfNodesToMix,
+    );
+  }
+  nodes.fill(averageTemperatureOfNodesToMix, 0, countOfNodesToMix);
+}
+
+if (import.meta.env.MODE === 'dev') {
+  // Make things available to unit tests
+  defineExpose({ state, mixColdWaterOnTopOfTankWithHotWaterBelow });
+}
+
+/** Returns the average of the first `n` numbers in an array. */
+function averageOfFirstNNumbers(numbers: number[], n: number) {
+  return average(numbers.slice(0, n));
+}
+
+function average(array: number[]) {
+  return array.reduce((a, b) => a + b) / array.length;
 }
 
 /** In joules/(kg*degreeCelsius). The specific heat capacity of water. */
@@ -220,7 +300,7 @@ const heightOfWaterNodeInTank = tankHeight / tankWaterNodeCount;
 
 // Todo: Use the Crank-Nicolson Algorithm to make this stable and reliable even
 // when the time step is large.
-function manageTemperatureMixingInTank(deltaTime: number) {
+function manageHeatConductionAcrossTankWater(deltaTime: number) {
   /** In joules. The heat conducted out the top or bottom of each water node. */
   let conductedHeat: number[] =
     // Start with 0 because we will estimate the boundary condition of no heat
@@ -287,5 +367,12 @@ function round(num: number) {
 <style scoped>
 button:not(:last-of-type) {
   margin-right: 1rem;
+}
+td:deep(.thermal-gradient) {
+  height: 9rem;
+  width: 9rem;
+  border-width: 2px;
+  border-style: solid;
+  border-radius: 4px;
 }
 </style>
