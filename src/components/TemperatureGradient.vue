@@ -1,5 +1,5 @@
 <!-- A series of rectangles that show the temperature at different locations.
-Use the `thermal-gradient` class on the topmost div to control it's size -->
+Use the `thermal-gradient` class on the topmost div to control its size. -->
 
 <script setup lang="ts">
 const props = withDefaults(
