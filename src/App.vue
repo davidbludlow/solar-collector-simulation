@@ -7,11 +7,11 @@ import ThermalSimulation from './components/ThermalSimulation.vue';
     <h1>Simulation Coding Challenge</h1>
     <p>
       David Ludlow created this simulation as a coding challenge to apply for a
-      job. The source code is at
+      job. The source code of the heart of the simulation can be found at
       <a
-        href="https://github.com/davidbludlow/solar-collector-simulation"
+        href="https://github.com/davidbludlow/solar-collector-simulation/blob/main/src/components/ThermalSimulation.vue"
         target="_blank"
-        >https://github.com/davidbludlow/solar-collector-simulation</a
+        >https://github.com/davidbludlow/solar-collector-simulation/blob/main/src/components/ThermalSimulation.vue</a
       >
     </p>
     <img
