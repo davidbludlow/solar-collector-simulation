@@ -143,7 +143,7 @@ const collectorOutputTemperature = computed(
 );
 
 // Simulation control loop
-setInterval(
+const controlLoopSetInterval = setInterval(
   () => {
     if (state.simulationRunning) {
       /** Seconds of time step */
@@ -158,6 +158,9 @@ setInterval(
   },
   (pumpTimeToMoveOneNode * 1000) / simulationTimeDilation,
 );
+
+// Cleanup
+onUnmounted(() => clearInterval(controlLoopSetInterval));
 
 /** Pump one node of water. This will push over all the other water nodes in the
  * system. */
