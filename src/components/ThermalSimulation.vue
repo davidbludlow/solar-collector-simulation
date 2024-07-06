@@ -1,17 +1,24 @@
 <template>
-  <template v-if="state.simulationRunning">
-    Simulation running at x{{ simulationTimeDilation }} speed.
-  </template>
-  t={{ Math.round(state.t) }} seconds ({{ Math.floor(state.t / 60 / 60) }} hours
-  {{ Math.floor((state.t / 60) % 60) }} min {{ Math.round(state.t % 60) }} s)
-  <br />
   <button @click="state.simulationRunning = !state.simulationRunning">
     {{ state.simulationRunning ? 'Pause Simulation' : 'Resume Simulation' }}
   </button>
   <button @click="state.pumpOn = !state.pumpOn">
     Turn Pump {{ state.pumpOn ? 'Off' : 'On' }}
   </button>
-  <br />
+  <p>
+    <template v-if="state.simulationRunning">
+      Simulation running at x{{ simulationTimeDilation }} speed.
+    </template>
+    t={{ Math.round(state.t) }} seconds ({{
+      Math.floor(state.t / 60 / 60)
+    }}
+    hours {{ Math.floor((state.t / 60) % 60) }} min
+    {{ Math.round(state.t % 60) }} s) <br />
+    Solar Collector input water temperature
+    {{ round(collectorInputTemperature) }}°C <br />
+    Solar Collector output water temperature
+    {{ round(collectorOutputTemperature) }}°C
+  </p>
   <table>
     <tr>
       <th>Solar Collector</th>
@@ -31,23 +38,21 @@
       </td>
     </tr>
   </table>
-  <br />
-  Solar Collector input water temperature
-  {{ round(collectorInputTemperature) }}°C <br />
-  Solar Collector output water temperature
-  {{ round(collectorOutputTemperature) }}°C <br />
-  <br />
-  Temperatures of water in different sections of the solar collector (water node
-  temperatures): <br />
-  <div v-for="temperature in reversedCollectorWaterNodeTemperatures">
-    {{ round(temperature) }}°C
-  </div>
-  <br />
-  Temperatures of the layers of water in the thermal storage tank, top to bottom
-  (water node temperatures): <br />
-  <div v-for="temperature in state.tankWaterNodeTemperatures">
-    {{ round(temperature) }}°C
-  </div>
+  <p>The same information as the above table, but in text form:</p>
+  <p class="indent-1">
+    Temperatures of water in different sections of the solar collector (water
+    node temperatures): <br />
+    <template v-for="temperature in reversedCollectorWaterNodeTemperatures">
+      {{ round(temperature) }}°C <br />
+    </template>
+  </p>
+  <p class="indent-1">
+    Temperatures of the layers of water in the thermal storage tank, top to
+    bottom (water node temperatures): <br />
+    <template v-for="temperature in state.tankWaterNodeTemperatures">
+      {{ round(temperature) }}°C <br />
+    </template>
+  </p>
 </template>
 
 <script setup lang="ts">
@@ -117,8 +122,8 @@ const pipeWaterNodeCount = 2;
 /** In meters. The height of the thermal storage tank. */
 const tankHeight = Math.cbrt(tankVolume) * 3;
 
-/** The speed of the simulation. 100 is 100 times faster than real time. */
-const simulationTimeDilation = 100;
+/** The speed of the simulation. 400 is 400 times faster than real time. */
+const simulationTimeDilation = 400;
 /** In °C. For all the air that surrounds the system. */
 const ambientAirTemperature = 20; // Room temperature
 /** In °C. For all the water in the system at t=0. Let's start the temperature
@@ -366,13 +371,16 @@ function round(num: number) {
 
 <style scoped>
 button:not(:last-of-type) {
-  margin-right: 1rem;
+  margin-right: .5rem;
 }
 td:deep(.thermal-gradient) {
-  height: 9rem;
-  width: 9rem;
+  height: 12rem;
+  width: 5rem;
   border-width: 2px;
   border-style: solid;
   border-radius: 4px;
+}
+.indent-1 {
+  margin-left: 2rem;
 }
 </style>

@@ -5,6 +5,15 @@ import ThermalSimulation from './components/ThermalSimulation.vue';
 <template>
   <main>
     <h1>Simulation Coding Challenge</h1>
+    <p>
+      David Ludlow created this simulation as a coding challenge to apply for a
+      job. The source code is at
+      <a
+        href="https://github.com/davidbludlow/solar-collector-simulation"
+        target="_blank"
+        >https://github.com/davidbludlow/solar-collector-simulation</a
+      >
+    </p>
     <img
       src="./assets/thermal-system-diagram.png"
       alt="Diagram of thermal system, containing a solar collector that supplies a thermal storage tank with hot water."
