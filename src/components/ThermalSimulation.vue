@@ -40,7 +40,7 @@ const volumeOfWaterInCollector = 0.007;
  * says 0.88 gallons per minute is good. */
 const pumpFlowRateWhenOn = 0.0000555;
 /** In meters. The height of the thermal storage tank. */
-const tankHeight = Math.cbrt(tankVolume) * 3; // Just an estimate
+const tankHeight = Math.cbrt(tankVolume) * 2; // Just an estimate
 
 /** In meters^3. The volume of a discrete segment of water in the system. Even
  * though the water in this system is mostly continuous, we break it up into
@@ -381,7 +381,7 @@ button:not(:last-of-type) {
 }
 td:deep(.thermal-gradient) {
   height: 12rem;
-  width: 5rem;
+  width: 6rem;
   border-width: 2px;
   border-style: solid;
   border-radius: 4px;
