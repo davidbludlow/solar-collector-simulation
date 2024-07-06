@@ -39,13 +39,13 @@ const volumeOfWaterInCollector = 0.007;
  * https://www.solar365.com/solar/thermal/calculating-flow-rate-and-head-solar-thermal-systems?page=0,0
  * says 0.88 gallons per minute is good. */
 const pumpFlowRateWhenOn = 0.0000555;
+/** In meters. The height of the thermal storage tank. */
+const tankHeight = Math.cbrt(tankVolume) * 3; // Just an estimate
 
 /** In meters^3. The volume of a discrete segment of water in the system. Even
  * though the water in this system is mostly continuous, we break it up into
  * segments for simulation purposes. */
 const volumeOfWaterNode = 1 * litersToMetersCubed;
-/** In seconds. The time it takes for the pump to move one water node, when on. */
-const pumpTimeToMoveOneNode = volumeOfWaterNode / pumpFlowRateWhenOn;
 /** Number of water nodes that fit inside the solar collector. */
 const collectorWaterNodeCount = Math.round(
   volumeOfWaterInCollector / volumeOfWaterNode,
@@ -64,8 +64,8 @@ assertVolumeIsAMultipleOfNodeVolume(
 );
 /** Number of water nodes that fit inside each of the pipes. */
 const pipeWaterNodeCount = 2;
-/** In meters. The height of the thermal storage tank. */
-const tankHeight = Math.cbrt(tankVolume) * 3;
+/** In seconds. The time it takes for the pump to move one water node, when on. */
+const pumpTimeToMoveOneNode = volumeOfWaterNode / pumpFlowRateWhenOn;
 
 /** The speed of the simulation. 300 is 300 times faster than real time. */
 const simulationTimeDilation = 300;
@@ -74,6 +74,7 @@ const ambientAirTemperature = 20; // Room temperature
 /** In °C. For all the water in the system at t=0. Let's start the temperature
  * at room temperature. */
 const initialWaterTemperature = ambientAirTemperature;
+
 const state = reactive({
   /** Whether the simulation is running. */
   simulationRunning: true,
@@ -248,8 +249,11 @@ const contactAreaOfWaterNodeInTank = tankVolume / tankHeight;
 /** In meters. */
 const heightOfWaterNodeInTank = tankHeight / tankWaterNodeCount;
 
-// Todo: Use the Crank-Nicolson Algorithm to make this stable and reliable even
-// when the time step is large.
+// WARNING: If the time step was even just a little bit larger, the simulation
+// would become very unstable. Todo: We will need to change this to use the
+// Crank-Nicolson Algorithm to make this stable and reliable even when the time
+// step is large. I didn't use the Crank-Nicolson Algorithm because I wanted to
+// keep this code challenge simple.
 function manageHeatConductionAcrossTankWater(deltaTime: number) {
   /** In joules. The heat conducted out the top or bottom of each water node. */
   let conductedHeat: number[] =
